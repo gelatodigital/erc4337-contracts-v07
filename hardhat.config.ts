@@ -1,3 +1,5 @@
+import '@matterlabs/hardhat-zksync-solc'
+import '@matterlabs/hardhat-zksync-deploy'
 import '@nomiclabs/hardhat-etherscan'
 import '@nomiclabs/hardhat-waffle'
 import '@typechain/hardhat'
@@ -103,12 +105,45 @@ const config: HardhatUserConfig = {
       'contracts/samples/SimpleAccount.sol': optimizedComilerSettings
     }
   },
+
+  namedAccounts: {
+    deployer: {
+      default: '0x7aD7b5F4F0E5Df7D6Aa5444516429AF77babc3A0'
+    },
+    hardhatDeployer: { default: 0 }
+  },
+
+  zksolc: {
+    version: '1.5.7',
+    compilerSource: 'binary',
+    settings: {
+      isSystem: false,
+      forceEvmla: false,
+      optimizer: {
+        enabled: true,
+        mode: '3'
+      },
+      suppressedErrors: ['sendtransfer'],
+      libraries: {
+        'contracts/samples/bls/lib/BLSOpen.sol': {
+          BLSOpen: '0xE7265e90a6D5BEEDaE03b83504Cd305f87771C34'
+        }
+      }
+    }
+  },
   networks: {
     dev: { url: 'http://localhost:8545' },
     // github action starts localgeth service, for gas calculations
     dynamic: {
       accounts,
       url: ''
+    },
+    abstract: {
+      accounts,
+      zksync: true,
+      url: 'https://solitary-ultra-emerald.abstract-mainnet.quiknode.pro/7e6af119737a70a9b3d9128931ecf0b72e5658c4/',
+      chainId: 2741,
+      ethNetwork: 'mainnet'
     }
   },
   mocha: {
